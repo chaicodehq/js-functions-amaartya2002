@@ -41,12 +41,87 @@
  */
 export function createTiffinPlan({ name, mealType = "veg", days = 30 } = {}) {
   // Your code here
+
+  const mealTypes = {
+    veg: 80, nonveg: 120, jain: 90
+  }
+
+  if (!mealTypes.hasOwnProperty(mealType) || typeof name !== "string" || name === "") {
+    return null
+  }
+
+  // const { name, mealType, days } = {}
+
+  const dailyRate = mealTypes[mealType]
+
+  const totalCost = mealTypes[mealType] * days
+
+  return {
+    name,
+    mealType,
+    days,
+    dailyRate,
+    totalCost
+  }
+
+
+
 }
 
 export function combinePlans(...plans) {
   // Your code here
+  // Each plan: { name, mealType, days, dailyRate, totalCost }
+
+  if (plans.length === 0) return null
+
+  // console.log(plans);
+
+  const totalCustomers = plans.length
+  let totalRevenue = 0;
+  plans.forEach(plan => {
+    totalRevenue += plan.totalCost
+  })
+
+  const mealBreakdown = {}
+
+  plans.forEach(plan => {
+
+    mealBreakdown[plan.mealType] = (mealBreakdown[plan.mealType] || 0) + 1
+
+  })
+
+  return {
+    totalCustomers,
+    totalRevenue,
+    mealBreakdown
+  }
+
 }
 
 export function applyAddons(plan, ...addons) {
   // Your code here
+
+  if (plan === null) return null
+
+  const { name, mealType, days, dailyRate, totalCost } = plan
+
+  let newDailyRate = dailyRate
+
+  for (const addon of addons) {
+    newDailyRate += addon["price"]
+  }
+
+  const newTotalCost = newDailyRate * days
+
+  const addonNames = addons.map((addon) => addon["name"])
+
+
+  return {
+    name,
+    mealType,
+    days,
+    dailyRate: newDailyRate,
+    totalCost: newTotalCost,
+    addonNames
+  }
 }
