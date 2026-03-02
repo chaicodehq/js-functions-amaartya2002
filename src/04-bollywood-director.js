@@ -46,12 +46,90 @@
  */
 export function createDialogueWriter(genre) {
   // Your code here
-}
 
+
+  const obj = {
+
+    action: function (hero, villain) {
+      return `${hero} says: 'Tujhe toh main dekh lunga, ${villain}!'`
+    },
+
+    romance: function (hero, villain) {
+      return `${hero} whispers: '${villain}, tum mere liye sab kuch ho'`
+    },
+
+    comedy: function (hero, villain) {
+      return `${hero} laughs: '${villain} bhai, kya kar rahe ho yaar!'`
+    },
+
+    drama: function (hero, villain) {
+      return `${hero} cries: '${villain}, tune mera sab kuch cheen liya!'`
+    }
+
+  }
+
+  if (!obj.hasOwnProperty(genre)) return null
+
+  return function (hero, villain) {
+    if (!hero || !villain) return "..."
+
+    return obj[genre](hero, villain)
+  }
+
+}
+// 
 export function createTicketPricer(basePrice) {
   // Your code here
+  if (basePrice <= 0) return null
+
+
+  const seatPriceMultiplier = {
+    silver: 1, gold: 1.5, platinum: 2
+  }
+
+  function seatMultipliers(seatType, isWeekend) {
+
+    let newPrice = basePrice * seatPriceMultiplier[seatType]
+
+    newPrice = isWeekend ? (newPrice * 1.3) : (newPrice * 1)
+
+    return Math.round(newPrice)
+
+
+  }
+
+
+  return function (seatType, isWeekend = false) {
+
+    if (!seatPriceMultiplier.hasOwnProperty(seatType)) return null
+
+    return seatMultipliers(seatType, isWeekend);
+
+  }
 }
 
 export function createRatingCalculator(weights) {
   // Your code here
+
+  if (typeof weights !== "object" || weights === null) return null
+
+
+  function calculatingAvg(weight, scores) {
+    let sum = 0
+
+    const newWeights = Object.entries(weight)
+
+    for (const [key, val] of newWeights) {
+      sum += val * scores[key]
+    }
+
+    return Math.round(sum * 10) / 10
+
+  }
+
+
+  return function (scores) {
+
+    return calculatingAvg(weights, scores)
+  }
 }
