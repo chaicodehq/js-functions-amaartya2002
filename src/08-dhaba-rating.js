@@ -46,16 +46,101 @@
  */
 export function createFilter(field, operator, value) {
   // Your code here
+
+  const operatorsMap = {
+    ">": (a, b) => a > b,
+    "<": (a, b) => a < b,
+    ">=": (a, b) => a >= b,
+    "<=": (a, b) => a <= b,
+    "===": (a, b) => a === b
+  }
+  const fieldOfObj = field
+  const valueOfCondition = value
+  const operatorApplied = operator
+
+
+  function filteredObj(obj = {}) {
+
+    if (!operatorsMap.hasOwnProperty(operatorApplied)) {
+      return false
+    }
+
+
+    const mapFun = operatorsMap[operatorApplied]
+
+
+    return mapFun(obj[fieldOfObj], valueOfCondition)
+
+  }
+
+
+  return filteredObj
+
+
 }
 
 export function createSorter(field, order = "asc") {
   // Your code here
+
+
+
+  function comparator(a, b) {
+
+    const valA = a[field]
+    const valB = b[field]
+
+    if (typeof valA === "number" && typeof valB === "number") {
+      return order === "asc"
+        ? valA - valB
+        : valB - valA
+    }
+
+    if (typeof valA === "string" && typeof valB === "string") {
+      return order === "asc"
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA)
+    }
+
+    return 0
+
+  }
+
+  return comparator
+
+
 }
 
 export function createMapper(fields) {
   // Your code here
+
+  const fieldsArray = fields
+
+  function mapperOne(obj = {}) {
+
+    const returnObj = {}
+
+    for (const field of fieldsArray) {
+      if (obj.hasOwnProperty(field)) {
+        returnObj[field] = obj[field]
+      }
+    }
+
+    return returnObj
+  }
+
+  return mapperOne
+
+
 }
 
 export function applyOperations(data, ...operations) {
   // Your code here
+
+  if (!Array.isArray(data)) return []
+
+  return operations.reduce((acc, curr) => {
+    return curr(acc)
+  }, data)
+
+
 }
