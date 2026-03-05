@@ -53,29 +53,80 @@
  *   // => { name: "Haldi", form: "powder", packed: true, label: "Haldi Masala" }
  */
 export function pipe(...fns) {
-  // Your code here
+  if (fns.length === 0) {
+    return (x) => x
+  }
+
+  return (x) => (fns.reduce((acc, curr) => {
+    return curr(acc)
+  }, x))
 }
 
 export function compose(...fns) {
   // Your code here
+  if (fns.length === 0) {
+    return (x) => x
+  }
+
+  return (x) => ([...fns.reverse()].reduce((acc, curr) => {
+    return curr(acc)
+  }, x))
 }
 
 export function grind(spice) {
   // Your code here
+  return {
+    ...spice,
+    form: "powder"
+  }
 }
 
 export function roast(spice) {
   // Your code here
+  return {
+    ...spice,
+    roasted: true,
+    aroma: "strong"
+  }
 }
 
 export function mix(spice) {
   // Your code here
+  return {
+    ...spice,
+    mixed: true
+  }
 }
 
 export function pack(spice) {
   // Your code here
+  return {
+    ...spice,
+    packed: true,
+    label: `${spice.name} Masala`
+  }
 }
 
 export function createRecipe(steps) {
   // Your code here
+  if (!Array.isArray(steps) || steps.length === 0) {
+    return (x) => x
+  }
+
+  const stepsMapper = {
+    grind,
+    roast,
+    mix,
+    pack
+  }
+
+  const filteredSteps = steps.map((step) => stepsMapper[step]).filter(Boolean)
+
+  return pipe(...filteredSteps)
+
+  // return (x) => (steps.reduce((acc, curr) => {
+  //   if (stepsMapper.hasOwnProperty(curr)) {
+  //     return stepsMapper[curr](acc)
+  //   }
+  // }, x))
 }
