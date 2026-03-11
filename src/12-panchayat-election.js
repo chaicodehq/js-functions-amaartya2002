@@ -1,3 +1,5 @@
+import { react } from "@babel/types"
+
 /**
  * 🗳️ Panchayat Election System - Capstone
  *
@@ -156,12 +158,76 @@ export function createElection(candidates) {
 
 export function createVoteValidator(rules) {
   // Your code here
+  //console.log(rules);
+  const { minAge, requiredFields } = rules
+
+
+  return function (voter) {
+
+    for (const field of requiredFields) {
+
+      if (!voter.hasOwnProperty(field)) {
+        return {
+          valid: false,
+          reason: `${field} not valid`
+        }
+      }
+    }
+
+    if (voter.age < minAge) {
+      return {
+        valid: false,
+        reason: `age not satisfied`
+      }
+    }
+
+    return {
+      valid: true,
+      reason: null
+    }
+
+  }
 }
 
 export function countVotesInRegions(regionTree) {
   // Your code here
+
+  function countingVotes(region) {
+
+    if (!region) {
+      return 0
+    }
+
+    const { votes = 0, subRegions = [] } = region
+
+    let totalVotes = votes
+
+    for (const subRegion of subRegions) {
+      totalVotes += countingVotes(subRegion)
+    }
+
+    return totalVotes
+  }
+
+  return countingVotes(regionTree)
+
+
 }
 
 export function tallyPure(currentTally, candidateId) {
   // Your code here
+  console.log(currentTally);
+
+  const newTallyObj = { ...currentTally }
+
+
+
+  if (!newTallyObj.hasOwnProperty(candidateId)) {
+    newTallyObj[candidateId] = 1
+  } else {
+    newTallyObj[candidateId] += 1
+  }
+
+  return newTallyObj
+
 }
