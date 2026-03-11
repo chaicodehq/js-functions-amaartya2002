@@ -115,32 +115,21 @@ export function isPalindrome(str) {
   return true
 }
 
+
+
 export function generatePattern(n) {
-  // Your code here
 
-  if (typeof n !== "number" || n <= 0) return []
+  if (!Number.isInteger(n) || n <= 0) return []
 
-  const result = []
+  function ascend(level) {
+    if (level === 1) return ["*"]
 
-  const i = funcPrint(result, "*", n)
-}
-
-function funcPrint(result, pattern, n) {
-
-  let i = 1
-
-  while (i < n) {
-    result.push(pattern)
-    pattern += pattern
-    i++
+    const prev = ascend(level - 1)
+    return [...prev, "*".repeat(level)]
   }
 
+  const top = ascend(n)
+  const bottom = top.slice(0, -1).reverse()
 
-  while (i > n) {
-
-  }
-
-  return i
-
-
+  return [...top, ...bottom]
 }
