@@ -65,6 +65,93 @@
  */
 export function createElection(candidates) {
   // Your code here
+  //console.log(candidates);
+
+
+  const registeredVotersSet = []
+  const votes = []
+  const votesCountObj = {}
+
+  function registerVoter(voter) {
+
+    if (typeof voter !== "object" || voter === null) {
+      return false
+    }
+    const { id, name, age } = voter
+    if (!id || age < 18 || registeredVotersSet.some((voter) => voter["id"] === id)) {
+      return false
+    }
+    registeredVotersSet.push(voter)
+    return true
+  }
+
+
+  function castVote(voterId, candidateId, onSuccess, onError) {
+
+    if (!registeredVotersSet.some((voter) => voter["id"] === voterId)) {
+      return onError("Voter not registered")
+    }
+
+    if (!candidates.some((candidate) => candidate["id"] === candidateId)) {
+      return onError("Candidate not registered")
+    }
+
+    if (votes.some((vote) => vote["voterId"] === voterId)) {
+      return onError("Double voting")
+    }
+
+    const vote = { voterId, candidateId }
+    votes.push(vote)
+    votesCountObj[candidateId] = (votesCountObj[candidateId] || 0) + 1
+    return onSuccess(vote)
+  }
+
+  function getResults(sortFn) {
+
+
+    const results = candidates.map((c) => {
+      const id = c.id
+      const name = c.name
+      const party = c.party
+      const votesCount = votesCountObj[c.id]
+      return { id, name, party, votes: votesCount }
+    })
+
+
+    if (sortFn) {
+      return results.sort(sortFn)
+    }
+
+
+    return results.sort((a, b) => b.votes - a.votes)
+
+  }
+
+  function getWinner() {
+
+    if (votes.length === 0) return null
+
+    const someObj = candidates.map((c) => {
+      const voteNumbers = votesCountObj[c.id] || 0
+      return { cid: c.id, voteNumbers }
+    })
+
+    const someFinalCandidate = someObj.sort((a, b) => b.voteNumbers - a.voteNumbers)[0]
+
+    if (someFinalCandidate["voteNumbers"] === 0) return null
+
+    return candidates.find((candidate) => candidate["id"] === someFinalCandidate["cid"])
+  }
+
+
+
+  return {
+    registerVoter,
+    castVote,
+    getResults,
+    getWinner
+  }
+
 }
 
 export function createVoteValidator(rules) {
